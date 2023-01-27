@@ -1,0 +1,12 @@
+{
+  "name": "@dragon-panel/dto",
+  "version": "1.0.0",
+  "packageManager": "yarn@3.3.1",
+  "main": "dist/index.js",
+  "scripts": {
+    "install": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}
