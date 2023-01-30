@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { hash, compare } from "bcryptjs";
-import { InvalidCredentialsException } from 'src/errors';
+import { AdminAlreadyExistException, InvalidCredentialsException } from 'src/errors';
 import { User } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -18,6 +18,16 @@ export class AuthenticationService {
   async registerUser(username: string, password: string) {
     const hashedPassword = await this.hashPassword(password);
     const user = await this.usersService.addNew(username, hashedPassword);
+    return user;
+  }
+
+  async registerFirstSuperAdmin(username: string, password: string) {
+    const exists = await this.usersService.superadminExists();
+    if (exists) {
+      throw new AdminAlreadyExistException();
+    }
+    const hashedPassword = await this.hashPassword(password);
+    const user = await this.usersService.addNew(username, hashedPassword, true);
     return user;
   }
 

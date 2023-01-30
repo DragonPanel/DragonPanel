@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { Request as Req } from 'express';
 import UserDto from 'src/users/dto/user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -6,6 +6,8 @@ import { AuthenticationService } from './authentication.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UserId } from './decorators/userId.decorator';
+import { Public } from './decorators/public.decorator';
+import { IsInittedDto, RegisterDto } from './dtos';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -13,6 +15,20 @@ export class AuthenticationController {
     private authenticationService: AuthenticationService,
     private usersService: UsersService
   ) {}
+
+  @Public()
+  @Get("/init")
+  async isInitialized() {
+    const superadminExists = await this.usersService.superadminExists();
+    return new IsInittedDto(superadminExists);
+  }
+
+  @Public()
+  @Post("/init")
+  async initSuperadmin(@Body() { username, password }: RegisterDto) {
+    const user = await this.authenticationService.registerFirstSuperAdmin(username, password);
+    return UserDto.fromPlain(user);
+  }
 
   @UseGuards(LocalAuthGuard)
   @Post("/login")

@@ -17,6 +17,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // superadmin is the absolute master of the entire universe
+  // superadmin is immune to any permission or role for he
+  // already wields indefeasible power to do anything he pleases
+  // on the Dragon Panel. It has been given to him by the Holy Dragon himself.
+  superadmin Boolean? @default(false)
+
   permissions UserPermission[]
   roles       RoleOnUser[]
 }

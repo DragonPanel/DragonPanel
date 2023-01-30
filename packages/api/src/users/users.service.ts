@@ -8,7 +8,7 @@ import UserModel from './dto/user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async addNew(username: string, hashedPassword: string) {
+  async addNew(username: string, hashedPassword: string, superadmin = false) {
     username = username.toLowerCase();
 
     const existingUser = await this.findByUsername(username);
@@ -19,7 +19,8 @@ export class UsersService {
     const user: User = await this.prisma.user.create({
       data: {
         username,
-        password: hashedPassword
+        password: hashedPassword,
+        superadmin
       }
     });
 
@@ -40,5 +41,14 @@ export class UsersService {
     });
     
     return user;
+  }
+
+  async superadminExists() {
+    const superadmin = await this.prisma.user.findFirst({
+      where: { superadmin: true },
+      select: { id: true }
+    });
+
+    return !!superadmin;
   }
 }

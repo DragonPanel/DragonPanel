@@ -36,3 +36,9 @@ export class InvalidCredentialsException extends DPException {
     super(HttpStatus.UNAUTHORIZED, "Invalid username or password.");
   }
 }
+
+export class AdminAlreadyExistException extends DPException {
+  constructor() {
+    super(HttpStatus.FORBIDDEN, "Admin already exists.")
+  }
+}

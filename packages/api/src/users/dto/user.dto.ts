@@ -10,6 +10,9 @@ export default class UserDto implements User {
 
   @Exclude()
   password: string;
+
+  @Expose({ groups: [ "admin", "toClass" ] })
+  superadmin: boolean | null;
   
   @Expose()
   createdAt: Date;

@@ -1,3 +1,4 @@
+import { Expose } from "class-transformer";
 import { IsNotEmpty, IsString, Matches, MaxLength, MinLength } from "class-validator";
 
 export class RegisterDto {
@@ -13,4 +14,13 @@ export class RegisterDto {
   @MinLength(8)
   @MaxLength(72)
   password: string;
+}
+
+export class IsInittedDto {
+  constructor(initalized: boolean) {
+    this.initialized = initalized;
+  }
+
+  @Expose()
+  initialized: boolean;
 }
