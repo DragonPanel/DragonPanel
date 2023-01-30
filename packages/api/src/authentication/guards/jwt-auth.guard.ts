@@ -26,6 +26,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
     if (!authHeader) {
+      console.log("Auth Header");
       throw new UnauthorizedException();
     }
     const token = authHeader.split(' ')[1];

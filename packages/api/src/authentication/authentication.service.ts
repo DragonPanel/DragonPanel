@@ -40,6 +40,7 @@ export class AuthenticationService {
     if (await this.comparePassword(password, user.password)) {
       return this.signTheDealWithTheDevilWithBloodOfLoggedInUser(user);
     }
+    throw new InvalidCredentialsException();
   }
 
   async hashPassword(password: string) {

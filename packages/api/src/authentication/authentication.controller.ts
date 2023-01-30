@@ -30,6 +30,8 @@ export class AuthenticationController {
     return UserDto.fromPlain(user);
   }
 
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   @Post("/login")
   async login(@Request() req: Req) {
@@ -48,7 +50,8 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post("/logout")
   async logout(@Request() req: Req) {
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization;
+    const [_, token] = authHeader?.split(" ") ?? [];
     if (token) {
       await this.authenticationService.revokeJwt(token);
     }
