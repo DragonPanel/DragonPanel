@@ -82,6 +82,16 @@ describe("Authentication", () => {
         .expect(res => expect(res.body).toMatchObject({ username: validUsername.toLowerCase() }))
     });
 
+    it("GET /api/auth/init - should now return initialized state as true", () => {
+      return request(app.getHttpServer())
+        .get("/api/auth/init")
+        .expect(200)
+        .expect("Content-Type", /application\/json/)
+        .expect({
+          initialized: true
+        });
+    });
+
     it("POST /api/auth/init - another valid post request to init should result in 403 and error in response 'AdminAlreadyExistException'", async () => {
       return request(app.getHttpServer())
         .post("/api/auth/init")
