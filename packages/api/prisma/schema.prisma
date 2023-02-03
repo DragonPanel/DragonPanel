@@ -67,6 +67,7 @@ model RoleOnUser {
   roleId String
   user   User   @relation(fields: [userId], references: [id])
   userId String
+  priority Int?
 
   assignedAt DateTime @default(now())
   assignedBy String?
