@@ -42,3 +42,9 @@ export class AdminAlreadyExistException extends DPException {
     super(HttpStatus.FORBIDDEN, "Admin already exists.")
   }
 }
+
+export class NoPermissionException extends DPException {
+  constructor() {
+    super(HttpStatus.FORBIDDEN, "User has no permissions to perform requested action.");
+  }
+}

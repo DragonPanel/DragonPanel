@@ -9,8 +9,15 @@ import { DragondModule } from './dragond/dragond.module';
 import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
-  imports: [PrismaModule, AuthenticationModule, UsersModule, SystemdModule, DragondModule, AuthorizationModule],
+  imports: [
+    PrismaModule,
+    AuthenticationModule,
+    UsersModule,
+    SystemdModule,
+    DragondModule,
+    AuthorizationModule.forRoot()
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,12 +1,20 @@
-export interface IPermissionClass extends Function {
-  Action: {[key: string]: string},
-}
+import { IPermissionClass } from "../permission-class";
 
-export const Permission = () => {
+export const DECORATED_PERMISSION_KEY = Symbol("decoratedPermission");
+export const PERMISSION_KEY_KEY = Symbol("permissionKey");
+
+/**
+ * Marks class as a permission class.
+ * @param permissionKey Should be an unique permission key.
+ * It would be the best to use something like `com.example.users.createUser`
+ * @returns 
+ */
+export const Permission = (permissionKey: string) => {
   return (constructor: IPermissionClass) => {
     for (const [key, val] of Object.entries(constructor.Action)) {
-      constructor.Action[key] = `${constructor.name}::${val}`
+      constructor.Action[key] = `${permissionKey}::${val}`
     }
-    Reflect.defineMetadata("decoratedPermission", true, constructor);
+    Reflect.defineMetadata(DECORATED_PERMISSION_KEY, true, constructor);
+    Reflect.defineMetadata(PERMISSION_KEY_KEY, permissionKey, constructor);
   }
 }

@@ -1,6 +1,6 @@
 import { Permission } from "src/authorization/decorators/permission.decorator";
 
-@Permission()
+@Permission("net.dragonpanel.systemd.unitPermission")
 export default class UnitPermission {
   static Action = {
     List: "list",
@@ -9,4 +9,6 @@ export default class UnitPermission {
     Stop: "stop",
     Restart: "restart"
   }
+
+  static Description = "Permission for systemd units."
 }
