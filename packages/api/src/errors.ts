@@ -48,3 +48,21 @@ export class NoPermissionException extends DPException {
     super(HttpStatus.FORBIDDEN, "User has no permissions to perform requested action.");
   }
 }
+
+export class PermissionNotFoundException extends DPException {
+  constructor(permissionKey: string) {
+    super(HttpStatus.NOT_FOUND, `Permission ${permissionKey} was not found.`);
+  }
+}
+
+export class UserNotFoundException extends DPException {
+  constructor(userIdentifier: any) {
+    super(HttpStatus.NOT_FOUND, `User ${userIdentifier} was not found.`);
+  }
+}
+
+export class ActionIsNotPartOfPermissionException extends DPException {
+  constructor(permissionKey: string, action: string) {
+    super(HttpStatus.BAD_REQUEST, `Action ${action} is not part of ${permissionKey} permission class.`);
+  }
+}

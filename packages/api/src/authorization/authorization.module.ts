@@ -6,10 +6,13 @@ import { UserAuthorizationService } from './services/user-authorization.service'
 import { AuthorizationService } from './services/authorization.service';
 import { AuthorizationController } from './authorization.controller';
 import PermissionPermission from './permissions/permission.permission';
+import { PrismaModule } from 'src/prisma/prisma.module';
+import { UsersModule } from 'src/users/users.module';
 
 const logger = new Logger("AuthorizationModule");
 
 @Module({
+  imports: [PrismaModule, UsersModule],
   providers: [UserAuthorizationService, AuthorizationService],
   exports: [UserAuthorizationService],
   controllers: [AuthorizationController]
