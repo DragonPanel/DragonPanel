@@ -1,27 +1,16 @@
-import { IsEnum, IsIn, IsNotEmpty, IsString } from "class-validator";
-
-export enum ActionOperation {
-  /**
-   * Allows to perform an action
-   */
-  Allow = "allow",
-  /**
-   * Forbids to perform an action
-   */
-  Disallow = "disallow",
-  /**
-   * Usets an action, restores it to default state
-   */
-  Unset = "unset"
-}
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { ActionMode } from "../enums/action-mode.enum";
 
 export class ActionUpdateDto {
   @IsString()
   @IsNotEmpty()
   action: string;
 
-  @IsEnum(ActionOperation)
-  operation: ActionOperation;
+  /**
+   * Allow, Disallow, Unset
+   */
+  @IsEnum(ActionMode)
+  mode: ActionMode;
 }
 
 export interface IActionUpdateDto extends ActionUpdateDto {}

@@ -67,9 +67,15 @@ export class RoleNotFoundException extends DPException {
   }
 }
 
+export class RoleOnUserNotFoundException extends DPException {
+  constructor(roleIdentifier: any, userIndentifier: any) {
+    super(HttpStatus.NOT_FOUND, `Role ${roleIdentifier} was not found on user ${userIndentifier}`);
+  }
+}
+
 export class RoleAlreadyExistsException extends DPException {
   constructor(roleIdentifier: any) {
-    super(HttpStatus.CONFLICT, `Role ${roleIdentifier} alread exists.`);
+    super(HttpStatus.CONFLICT, `Role ${roleIdentifier} already exists.`);
   }
 }
 

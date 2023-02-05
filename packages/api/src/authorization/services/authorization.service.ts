@@ -5,41 +5,51 @@
 
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { ActionIsNotPartOfPermissionException, PermissionNotFoundException, PermissionNotFoundOnRoleException, RoleAlreadyAssignedException, RoleAlreadyExistsException, RoleNotFoundException, UserNotFoundException } from 'src/errors';
+import { ActionIsNotPartOfPermissionException, PermissionNotFoundException, PermissionNotFoundOnRoleException, RoleAlreadyAssignedException, RoleAlreadyExistsException, RoleNotFoundException, RoleOnUserNotFoundException, UserNotFoundException } from 'src/errors';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
-import { ActionOperation, ActionUpdateDto } from "../dto/action-update.dto";
+import { ActionUpdateDto } from "../dto/action-update.dto";
 import { CreateRoleDto } from '../dto/create-role.dto';
+import { PermissionActionDto } from '../dto/permission-action.dto';
 import { IPermissionClassDto } from '../dto/permission-class.dto';
 import { IRoleOnUserDto } from '../dto/role-on-user.dto';
+import RolePermissionDto from '../dto/role-permission.dto';
 import { UpdateRolePermission } from '../dto/update-role-permission';
 import { UpdateRoleDto } from '../dto/update-role.dto';
+import { ActionMode } from '../enums/action-mode.enum';
 import { IPermissionClass } from '../permission-class';
 import { PERMISSIONS_STORE } from '../permissions.store';
 
 class PermissionAction {
-  constructor(public action: string, public operation: ActionOperation) {}
+  constructor(public action: string, public mode: ActionMode) {}
 
   static fromString(str: string): PermissionAction {
     if (str.startsWith("!")) {
-      return new this(str.substring(1), ActionOperation.Disallow);
+      return new this(str.substring(1), ActionMode.Disallow);
     }
-    return new this(str, ActionOperation.Allow);
+    return new this(str, ActionMode.Allow);
   }
 
   static fromDto(dto: ActionUpdateDto) {
-    return new this(dto.action, dto.operation);
+    return new this(dto.action, dto.mode);
   }
 
   toStr(): string {
-    switch(this.operation) {
-      case ActionOperation.Allow:
+    switch(this.mode) {
+      case ActionMode.Allow:
         return this.action;
-      case ActionOperation.Disallow:
+      case ActionMode.Disallow:
         return `!${this.action};`
       default:
         return '';
     }
+  }
+
+  toDto(): PermissionActionDto {
+    const dto = new PermissionActionDto();
+    dto.mode = this.mode;
+    dto.name = this.action;
+    return dto;
   }
 }
 
@@ -48,9 +58,13 @@ class PermissionActions {
 
   toStr(): string {
     return this.actions
-      .filter(action => action.operation !== ActionOperation.Unset)
+      .filter(action => action.mode !== ActionMode.Unset)
       .map(action => action.toStr())
       .join(',');
+  }
+
+  toDto(): PermissionActionDto[] {
+    return this.actions.map(a => a.toDto());
   }
 
   static fromString(str: string): PermissionActions {
@@ -62,8 +76,8 @@ class PermissionActions {
       // First we will delete action from collection if it exists in dto
       this.actions = this.actions.filter(a => a.action !== dto.action);
 
-      // If dto operation is unset then we will just return
-      if (dto.operation === ActionOperation.Unset) {
+      // If dto mode is unset then we will just return
+      if (dto.mode === ActionMode.Unset) {
         return;
       }
 
@@ -97,6 +111,11 @@ export class AuthorizationService {
   
   async listRoles() {
     return await this.prisma.role.findMany();
+  }
+
+  async listPermissionsOnRole(roleId: string): Promise<RolePermissionDto> {
+    // TODO:
+    throw new NotImplementedException();
   }
 
   async listRolesOnUser(userId: string): Promise<IRoleOnUserDto[]> {
@@ -271,8 +290,17 @@ export class AuthorizationService {
   }
 
   async deleteRoleFromUser(userId: string, roleId: string) {
-    // TODO:
-    throw new NotImplementedException();
+    const role = await this.prisma.roleOnUser.delete({
+      where: {
+        roleId_userId: {
+          roleId, userId
+        }
+      }
+    });
+
+    if (!role) {
+      throw new RoleOnUserNotFoundException(roleId, userId);
+    }
   }
 
   private async verifyUpdateRolePermissionDto(
