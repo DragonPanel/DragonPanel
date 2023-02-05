@@ -23,20 +23,7 @@ model User {
   // on the Dragon Panel. It has been given to him by the Holy Dragon himself.
   superadmin Boolean? @default(false)
 
-  permissions UserPermission[]
   roles       RoleOnUser[]
-}
-
-model UserPermission {
-  id         String   @id @default(uuid())
-  key        String
-  // Actions in form of string separated with commas: Read,!Write
-  // '!' means disallow 
-  actions    String
-  assignedAt DateTime @default(now())
-  assignedBy String?
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String
 }
 
 model RolePermission {
@@ -49,25 +36,28 @@ model RolePermission {
   assignedBy String?
   role       Role     @relation(fields: [roleId], references: [id])
   roleId     String
+
+  @@unique([key, roleId], name: "keyrole")
 }
 
 model Role {
   id          String           @id @default(uuid())
-  name        String
+  displayName String
+  name        String           @unique
   permissions RolePermission[]
 
   createdAt DateTime @default(now())
   createdBy String?
 
-  users RoleOnUser[]
+  assignements RoleOnUser[]
 }
 
 model RoleOnUser {
-  role   Role   @relation(fields: [roleId], references: [id])
-  roleId String
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  priority Int?
+  role     Role   @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roleId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId   String
+  priority Int
 
   assignedAt DateTime @default(now())
   assignedBy String?
@@ -76,7 +66,7 @@ model RoleOnUser {
 }
 
 model RevokedJWT {
-  id String @id @default(uuid())
-  hashedJWT String
+  id         String    @id @default(uuid())
+  hashedJWT  String
   expiration DateTime?
 }

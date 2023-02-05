@@ -2,10 +2,10 @@ import { Type } from "class-transformer";
 import { IsNotEmpty, IsString } from "class-validator";
 import { ActionUpdateDto } from "./action-update.dto";
 
-export class UpdateUserPermissionsDto {
+export class UpdateRolePermission {
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  roleId: string;
 
   @IsString()
   @IsNotEmpty()

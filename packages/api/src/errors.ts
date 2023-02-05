@@ -61,6 +61,30 @@ export class UserNotFoundException extends DPException {
   }
 }
 
+export class RoleNotFoundException extends DPException {
+  constructor(roleIdentifier: any) {
+    super(HttpStatus.NOT_FOUND, `Role ${roleIdentifier} was not found.`);
+  }
+}
+
+export class RoleAlreadyExistsException extends DPException {
+  constructor(roleIdentifier: any) {
+    super(HttpStatus.CONFLICT, `Role ${roleIdentifier} alread exists.`);
+  }
+}
+
+export class RoleAlreadyAssignedException extends DPException {
+  constructor(roleIdentifier: any, userIdentifier: any) {
+    super(HttpStatus.CONFLICT, `Role ${roleIdentifier} is already assigned to user ${userIdentifier}.`);
+  }
+}
+
+export class PermissionNotFoundOnRoleException extends DPException {
+  constructor(permissionKey: string, roleId: string) {
+    super(HttpStatus.NOT_FOUND, `Permission ${permissionKey} was not foun on role ${roleId}`);
+  }
+}
+
 export class ActionIsNotPartOfPermissionException extends DPException {
   constructor(permissionKey: string, action: string) {
     super(HttpStatus.BAD_REQUEST, `Action ${action} is not part of ${permissionKey} permission class.`);
