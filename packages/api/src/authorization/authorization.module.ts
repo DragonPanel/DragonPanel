@@ -29,7 +29,10 @@ export class AuthorizationModule {
         return; // Return for sanity
       }
 
-      const permissionKey = Reflect.getMetadata(PERMISSION_KEY_KEY, permission);
+      const permissionKey = Reflect.getMetadata(PERMISSION_KEY_KEY, permission) as string;
+      if (permissionKey?.includes("::")) {
+        throw new Error("'::' string is not allowed in permission key.");
+      }
       if (PERMISSIONS_STORE.has(permissionKey)) {
         this.duplicatePermissionError(permissionKey);
       }

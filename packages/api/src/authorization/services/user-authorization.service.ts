@@ -1,5 +1,7 @@
 import { Inject, Injectable, InternalServerErrorException, Logger, NotImplementedException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { NoPermissionException } from 'src/errors';
+import { AuthorizationService } from './authorization.service';
 
 /**
  * Request scoped service to check user permission.
@@ -9,7 +11,10 @@ import { REQUEST } from '@nestjs/core';
  */
 @Injectable({ scope: Scope.REQUEST })
 export class UserAuthorizationService {
-  constructor(@Inject(REQUEST) req: any) {
+  constructor(
+    @Inject(REQUEST) req: any,
+    private authorizationService: AuthorizationService
+  ) {
     this.init(req.user?.id);
   }
 
@@ -33,8 +38,14 @@ export class UserAuthorizationService {
    */
   public async can(action: string): Promise<boolean> {
     this.checkInitializedUser(this.can.name);
-    // TODO: Implement
-    throw new NotImplementedException();
+    const [ permissionKey, pureAction ] = action.split("::");
+
+    const userPermissionModel = await this.authorizationService.createPermissionModelForUser(
+      this.userId!,
+      permissionKey
+    );
+
+    return userPermissionModel.can(pureAction);
   }
 
   /**
@@ -46,8 +57,10 @@ export class UserAuthorizationService {
    */
   public async must(action: string): Promise<void> {
     this.checkInitializedUser(this.must.name);
-    // TODO: Implement
-    throw new NotImplementedException();
+    if (await this.can(action)) {
+      return;
+    }
+    throw new NoPermissionException();
   }
 
   private checkInitializedUser(methodName: string) {
