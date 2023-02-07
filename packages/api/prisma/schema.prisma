@@ -29,9 +29,8 @@ model User {
 model RolePermission {
   id         String   @id @default(uuid())
   key        String
-  // Actions in form of string separated with commas: Read,!Write
-  // '!' means disallow 
-  actions    String
+  // Allow/Disallow
+  mode       String
   assignedAt DateTime @default(now())
   assignedBy String?
   role       Role     @relation(fields: [roleId], references: [id])

@@ -1,6 +1,7 @@
 import { Inject, Injectable, InternalServerErrorException, Logger, NotImplementedException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { NoPermissionException } from 'src/errors';
+import { IPermissionClass } from '../permission-class';
 import { AuthorizationService } from './authorization.service';
 
 /**
@@ -36,16 +37,10 @@ export class UserAuthorizationService {
    * 
    * @throws {InternalServerErrorException} if userId is null or undefined
    */
-  public async can(action: string): Promise<boolean> {
+  public async can(permission: IPermissionClass): Promise<boolean> {
     this.checkInitializedUser(this.can.name);
-    const [ permissionKey, pureAction ] = action.split("::");
 
-    const userPermissionModel = await this.authorizationService.createPermissionModelForUser(
-      this.userId!,
-      permissionKey
-    );
-
-    return userPermissionModel.can(pureAction);
+    return this.authorizationService.isUserAllowedTo(this.userId!, permission);
   }
 
   /**
@@ -55,9 +50,9 @@ export class UserAuthorizationService {
    * @throws {NoPermissionException}
    * @throws {InternalServerErrorException} if userId is null or undefined
    */
-  public async must(action: string): Promise<void> {
+  public async must(permission: IPermissionClass): Promise<void> {
     this.checkInitializedUser(this.must.name);
-    if (await this.can(action)) {
+    if (await this.can(permission)) {
       return;
     }
     throw new NoPermissionException();

@@ -11,9 +11,6 @@ export const PERMISSION_KEY_KEY = Symbol("permissionKey");
  */
 export const Permission = (permissionKey: string) => {
   return (constructor: IPermissionClass) => {
-    for (const [key, val] of Object.entries(constructor.Action)) {
-      constructor.Action[key] = `${permissionKey}::${val}`
-    }
     Reflect.defineMetadata(DECORATED_PERMISSION_KEY, true, constructor);
     Reflect.defineMetadata(PERMISSION_KEY_KEY, permissionKey, constructor);
   }
