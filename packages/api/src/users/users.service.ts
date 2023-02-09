@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UserAlreadyExistsException } from 'src/errors';
 import { PrismaService } from 'src/prisma/prisma.service';
-import UserModel from './dto/user.dto';
 
 @Injectable()
 export class UsersService {

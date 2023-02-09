@@ -2,6 +2,11 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { createApp } from 'src/create-app';
 import { expect } from '@jest/globals';
+import setupTestDb from './setup-test-db';
+
+function delay(time: number) {
+  return new Promise((resolve, reject) => setTimeout(resolve, time));
+}
 
 describe("Authentication", () => {
   let app: INestApplication;
@@ -10,6 +15,7 @@ describe("Authentication", () => {
   const validPassword = "StrongS€curePa$$word"
 
   beforeAll(async () => {
+    await setupTestDb();
     app = await createApp();
     await app.init();
   });
@@ -211,6 +217,106 @@ describe("Authentication", () => {
         .set("Authorization", `Bearer ${accessToken}`)
         .expect(401);
     })
+  });
+
+  describe("Register", () => {
+    let superadminToken = "";
+    let unpriviledToken = "";
+    
+    it("POST /api/auth/login - Superadmin should be created in previous test, so we should log in into it", async () => {
+      // Tokens created with the same data within 1 second are identical
+      // I logged in and then logged out in previous test so token is revoked
+      // Which results in invalid token received after second login within 1 sec
+      // That's why I delay this test case by 1s to make sure I will receive different token.
+      await delay(1000);
+      await request(app.getHttpServer())
+        .post("/api/auth/login")
+        .send({ username: validUsername, password: validPassword })
+        .expect(200)
+        .expect(res => {
+          expect(res.body.token).toBeTruthy();
+          superadminToken = res.body.token;
+        });
+    });
+
+    it("POST /api/auth/register - with empty token should return 401 - Unauthorized", async () => {
+      await request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: validUsername2, password: validPassword })
+        .set("Authorization", `Bearer `)
+        .expect(401);
+
+      await request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: validUsername2, password: validPassword })
+        .set("Authorization", `Bearer`)
+        .expect(401);
+
+      await request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: validUsername2, password: validPassword })
+        .set("Authorization", ``)
+        .expect(401);
+    });
+
+    it("POST /api/auth/register - with invalid token should return 401", async () => {
+      return request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: validUsername2, password: validPassword })
+        .set("Authorization", `Bearer invalidTokenxD`)
+        .expect(401);
+    });
+
+    it("[TODO] POST /api/auth/register - with invalid data should return 400 - Bad Request", () => {
+
+    });
+
+    let newUser: any = null;
+
+    it("POST /api/auth/register - superadmin should be able to create an user", async () => {
+      return await request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: validUsername2, password: validPassword })
+        .set("Authorization", `Bearer ${superadminToken}`)
+        .expect(201)
+        .expect(res => {
+          newUser = res.body;
+          expect(newUser.username).toBe(validUsername2.toLowerCase());
+        });
+    });
+
+    it("Response from register should not contain user password", () => {
+      expect(newUser).toBeTruthy();
+      // @ts-ignore
+      expect(newUser.password).toBeNil();
+    });
+
+    it("POST /api/auth/login - new user should be able to login", () => {
+      return request(app.getHttpServer())
+      .post("/api/auth/login")
+      .send({ username: validUsername2, password: validPassword })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.token).toBeTruthy();
+        unpriviledToken = res.body.token;
+      });
+    });
+
+    it("POST /api/auth/register - unpriviled user should not be able to create an user, response should have status 403 - Forbidden", () => {
+      return request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: "Zdzichu10", password: validPassword })
+        .set("Authorization", `Bearer ${unpriviledToken}`)
+        .expect(403);
+    });
+
+    it("POST /api/auth/register - creating another user with the same username should return 409 - Conflict", () => {
+      return request(app.getHttpServer())
+        .post("/api/auth/register")
+        .send({ username: validUsername2, password: validPassword })
+        .set("Authorization", `Bearer ${superadminToken}`)
+        .expect(409);
+    });
   });
 
   afterAll(async () => {
