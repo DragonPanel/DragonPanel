@@ -1,6 +1,8 @@
 import { Inject, Injectable, InternalServerErrorException, Logger, NotImplementedException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { NoPermissionException } from 'src/errors';
+import { NoPermissionException, UserNotFoundException } from 'src/errors';
+import { UsersService } from 'src/users/users.service';
+import { IPermissionClass } from '../permission-class';
 import { AuthorizationService } from './authorization.service';
 
 /**
@@ -12,11 +14,9 @@ import { AuthorizationService } from './authorization.service';
 @Injectable({ scope: Scope.REQUEST })
 export class UserAuthorizationService {
   constructor(
-    @Inject(REQUEST) req: any,
+    @Inject(REQUEST) private req: any,
     private authorizationService: AuthorizationService
-  ) {
-    this.init(req.user?.id);
-  }
+  ) {}
 
   private userId?: string;
   private logger = new Logger(UserAuthorizationService.name);
@@ -30,22 +30,23 @@ export class UserAuthorizationService {
     this.userId = userId;
   }
 
+  private extractUserIdFromReq() {
+    this.init(this.req.user?.id);
+  }
+
   /**
    * Will return boolean indicating whenever user has permission to perform
    * required action or not.
    * 
    * @throws {InternalServerErrorException} if userId is null or undefined
    */
-  public async can(action: string): Promise<boolean> {
+  public async can(permission: IPermissionClass): Promise<boolean> {
+    if (!this.userId) {
+      this.extractUserIdFromReq();
+    }
     this.checkInitializedUser(this.can.name);
-    const [ permissionKey, pureAction ] = action.split("::");
-
-    const userPermissionModel = await this.authorizationService.createPermissionModelForUser(
-      this.userId!,
-      permissionKey
-    );
-
-    return userPermissionModel.can(pureAction);
+    
+    return await this.authorizationService.isUserAllowedTo(this.userId!, permission);
   }
 
   /**
@@ -55,9 +56,8 @@ export class UserAuthorizationService {
    * @throws {NoPermissionException}
    * @throws {InternalServerErrorException} if userId is null or undefined
    */
-  public async must(action: string): Promise<void> {
-    this.checkInitializedUser(this.must.name);
-    if (await this.can(action)) {
+  public async must(permission: IPermissionClass): Promise<void> {
+    if (await this.can(permission)) {
       return;
     }
     throw new NoPermissionException();

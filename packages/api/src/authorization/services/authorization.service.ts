@@ -3,19 +3,18 @@
  * how this work.
  */
 
-import { Injectable } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import { ActionIsNotPartOfPermissionException, PermissionNotFoundException, PermissionNotFoundOnRoleException, RoleAlreadyAssignedException, RoleAlreadyExistsException, RoleNotFoundException, RoleOnUserNotFoundException, UserNotFoundException } from 'src/errors';
+import { Injectable, Logger } from '@nestjs/common';
+import { PermissionNotFoundOnRoleException, RoleAlreadyAssignedException, RoleAlreadyExistsException, RoleNotFoundException, RoleOnUserNotFoundException, UserNotFoundException } from 'src/errors';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
-import PermissionActions from '../classes/permission-actions.class';
-import { UserPermissionModel } from '../classes/user-permission-model';
+import { PERMISSION_KEY_KEY } from '../decorators/permission.decorator';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { IPermissionClassDto } from '../dto/permission-class.dto';
 import { IRoleOnUserDto } from '../dto/role-on-user.dto';
 import RolePermissionDto from '../dto/role-permission.dto';
-import { UpdateRolePermission } from '../dto/update-role-permission';
+import { SetPermissionDto } from '../dto/set-permission.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
+import { PermissionMode } from '../enums/permission-mode';
 import { IPermissionClass } from '../permission-class';
 import { PERMISSIONS_STORE } from '../permissions.store';
 
@@ -26,63 +25,63 @@ export class AuthorizationService {
     private usersService: UsersService
   ) {}
 
-  async createPermissionModelForUser(userId: string, permissionKey: string): Promise<UserPermissionModel> {
-    const userPermissionList = await this.prisma.roleOnUser.findMany({
-      where: {
-        userId,
-        role: {
-          permissions: {
-            every: {
-              key: permissionKey
-            }
-          }
-        }
-      },
-      select: {
-        priority: true,
-        role: {
-          select: {
-            permissions: {
-              select: {
-                key: true,
-                actions: true
-              }
-            }
-          }
-        }
-      },
-      orderBy: {
-        priority: "desc"
-      }
-    });
-
-    const permissionListFlattened = userPermissionList.map(roleOnUser => {
-      const permission = roleOnUser.role.permissions[0]; // Here should be only one permission
-      return {
-        priority: roleOnUser.priority,
-        permissionKey: permission.key,
-        actions: permission.actions
-      }
-    });
-
-    return UserPermissionModel.buildFromDatabaseData(permissionListFlattened);
-  }
+  readonly logger = new Logger(this.constructor.name);
 
   listPermissionClasses(): IPermissionClassDto[] {
     return Array.from(PERMISSIONS_STORE.entries())
       .map(([key, permission]) => ({
-        name: permission.name,
+        className: permission.name,
+        name: permission.Name ?? permission.name,
         key,
-        description: permission.Description,
-        actions: Object.keys(permission.Action)
+        description: permission.Description
       }));
   }
 
   
+  async isUserAllowedTo(userId: string, permission: IPermissionClass): Promise<boolean> {
+    const isSuperadmin = (await this.prisma.user.findUnique({
+      select: { superadmin: true },
+      where: { id: userId }
+    }))?.superadmin;
+
+    if (isSuperadmin === true) {
+      return true;
+    }
+
+    const key = this.getPermissionKeyFromClass(permission);
+    if (!key) {
+      this.logger.error(`Permission class ${permission.name} is not decorated with Permission decorator so it's not valid. This should be fixed.`);
+      this.logger.warn(`Can't check permission for class ${permission.name} coz it's not decorated with @Permission. Returing no permission.`);
+      return false;
+    }
+
+    const highestPriorityPermissionRaw = await this.prisma.$queryRaw<{ key: string, mode: string } | null>`
+      SELECT RolePermission.key [key], RolePermission.mode [mode]
+      FROM RolePermission
+      INNER JOIN Role
+          ON Role.id = RolePermission.roleId
+      INNER JOIN RoleOnUser
+          ON RoleOnUser.roleId = Role.id
+      WHERE RoleOnUser.userId = ${userId}
+      AND RolePermission.key = ${key}
+      ORDER BY RoleOnUser.priority DESC
+      LIMIT 1
+    `;
+
+    if (highestPriorityPermissionRaw) {
+      return highestPriorityPermissionRaw.mode === PermissionMode.Allow;
+    }
+    return false;
+  }
+
   getPermissionClassByKey(key: string): IPermissionClass | null {
     return PERMISSIONS_STORE.get(key) ?? null;
   }
   
+  getPermissionKeyFromClass(permission: IPermissionClass): string | null {
+    return Reflect.getMetadata(PERMISSION_KEY_KEY, permission) as string ?? null;
+  }
+
   async listRoles() {
     return await this.prisma.role.findMany();
   }
@@ -95,7 +94,7 @@ export class AuthorizationService {
     return rolePermissions.map(rolePerm => ({
       id: rolePerm.id,
       key: rolePerm.key,
-      actions: PermissionActions.fromString(rolePerm.actions).toDto()
+      mode: PermissionMode[rolePerm.mode as keyof typeof PermissionMode]
     }))
   }
 
@@ -173,41 +172,28 @@ export class AuthorizationService {
     return role;
   }
 
-  async updateRolePermission(permissionDtoWithKeys: UpdateRolePermission) {
-    const [ PermissionClass, role ] = await this.verifyUpdateRolePermissionDto(permissionDtoWithKeys);
-
-    // TODO: write an explanation comment before I forget what is happenening here.
-
-    const permissionDto = this.replaceActionsKeysWithStr(PermissionClass, permissionDtoWithKeys);
-
-    let permission = await this.prisma.rolePermission.findFirst({
-      where: {
-        key: permissionDto.permission,
-        roleId: role.id,
-      }
+  async setPermissionOnRole(roleId: string, dto: SetPermissionDto) {
+    const role = await this.prisma.role.findUnique({
+      where: { id: roleId }
     });
 
-    let permissionActions = new PermissionActions();
-    if (permission) {
-      permissionActions = PermissionActions.fromString(permission.actions);
+    if (!role) {
+      throw new RoleNotFoundException(roleId);
     }
-    permissionActions.mergeWithUpdateDto(permissionDto.actions);
-
-    return await this.prisma.rolePermission.upsert({
-      where: {
-        id: permission?.id
+    
+    const updated = await this.prisma.rolePermission.upsert({
+      where: { keyrole: { key: dto.key, roleId: role.id } },
+      create: {
+        role: { connect: { id: role.id } },
+        key: dto.key,
+        mode: dto.mode
       },
       update: {
-        actions: permissionActions.toStr()
-      },
-      create: {
-        key: permissionDto.permission,
-        actions: permissionActions.toStr(),
-        role: {
-          connect: { id: role.id }
-        }
+        mode: dto.mode
       }
     });
+
+    return updated;
   }
 
   async deletePermissionFromRole(permissionKey: string, roleId: string) {
@@ -286,40 +272,5 @@ export class AuthorizationService {
     if (!role) {
       throw new RoleOnUserNotFoundException(roleId, userId);
     }
-  }
-
-  private async verifyUpdateRolePermissionDto(
-    dto: UpdateRolePermission
-  ): Promise<[IPermissionClass, Role]> {
-    const PermissionClass = this.getPermissionClassByKey(dto.permission);
-    if (!PermissionClass) {
-      throw new PermissionNotFoundException(dto.permission);
-    }
-
-    const classActionKeys = Object.keys(PermissionClass.Action);
-    dto.actions.forEach(action => {
-      if (!classActionKeys.includes(action.action)) {
-        throw new ActionIsNotPartOfPermissionException(dto.permission, action.action);
-      }
-    });
-
-    const role = await this.findRoleById(dto.roleId);
-    if (!role) {
-      throw new RoleNotFoundException(dto.roleId);
-    }
-
-    return [ PermissionClass, role ];
-  }
-
-  private replaceActionsKeysWithStr(permissionClass: IPermissionClass, dto: UpdateRolePermission): UpdateRolePermission {
-    const newInst = new UpdateRolePermission();
-    newInst.permission = dto.permission;
-    newInst.roleId = dto.roleId;
-    newInst.actions = dto.actions.map(a => ({
-      action: permissionClass.Action[a.action],
-      mode: a.mode
-    }));
-
-    return newInst;
   }
 }

@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import PermissionPermission from './permissions/permission.permission';
+import ListPermissionsPermission from './permissions/list-permissions.permission';
+import PermissionPermission from './permissions/list-permissions.permission';
 import { AuthorizationService } from './services/authorization.service';
 import { UserAuthorizationService } from './services/user-authorization.service';
 
@@ -11,8 +12,8 @@ export class AuthorizationController {
   ) {}
 
   @Get("classes")
-  listClasses() {
-    // TODO: this.userAuth.must(PermissionPermission.Action.List);
+  async listClasses() {
+    await this.userAuth.must(ListPermissionsPermission);
     return this.authorizationService.listPermissionClasses();
   }
 }

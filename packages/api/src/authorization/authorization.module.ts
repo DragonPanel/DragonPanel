@@ -5,7 +5,7 @@ import { PERMISSIONS_STORE } from './permissions.store';
 import { UserAuthorizationService } from './services/user-authorization.service';
 import { AuthorizationService } from './services/authorization.service';
 import { AuthorizationController } from './authorization.controller';
-import PermissionPermission from './permissions/permission.permission';
+import PermissionPermission from './permissions/list-permissions.permission';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UsersModule } from 'src/users/users.module';
 

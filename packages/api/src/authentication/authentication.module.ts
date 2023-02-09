@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersModule } from 'src/users/users.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { AuthorizationModule } from 'src/authorization/authorization.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         expiresIn: "24h"
       }
     }),
-    PrismaModule
+    PrismaModule,
+    AuthorizationModule
   ],
   providers: [
     AuthenticationService,

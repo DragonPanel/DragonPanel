@@ -8,12 +8,15 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { UserId } from './decorators/userId.decorator';
 import { Public } from './decorators/public.decorator';
 import { IsInittedDto, RegisterDto } from './dtos';
+import { UserAuthorizationService } from 'src/authorization/services/user-authorization.service';
+import { RegisterUserPermission } from './permissions/register-user.permission';
 
 @Controller('auth')
 export class AuthenticationController {
   constructor(
     private authenticationService: AuthenticationService,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private userAuthorization: UserAuthorizationService
   ) {}
 
   @Public()
@@ -38,7 +41,15 @@ export class AuthenticationController {
     return req.user;
   }
 
-  @UseGuards(JwtAuthGuard)
+  // TODO: write tests for this method.
+  @Post("/register")
+  async registerNewUser(@Body() body: RegisterDto) {
+    await this.userAuthorization.must(RegisterUserPermission);
+    const userRaw = await this.authenticationService.registerUser(body.username, body.password);
+    const user = UserDto.fromPlain(userRaw);
+    return user;
+  }
+
   @Get("/me")
   async me(@UserId() userId: string) {
     const userRaw = await this.usersService.findById(userId);
@@ -46,7 +57,6 @@ export class AuthenticationController {
     return user;
   }
 
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post("/logout")
   async logout(@Request() req: Req) {

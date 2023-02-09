@@ -1,9 +1,9 @@
 export class RoleOnUserDto {
   roleId: string;
-  displayName: string;
-  name: string;
   userId: string;
-  priority?: number | null;
+  priority: number;
+  name: string;
+  displayName: string;
 }
 
 export interface IRoleOnUserDto extends RoleOnUserDto {}
