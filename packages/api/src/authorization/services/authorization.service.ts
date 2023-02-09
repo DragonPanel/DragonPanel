@@ -39,6 +39,15 @@ export class AuthorizationService {
 
   
   async isUserAllowedTo(userId: string, permission: IPermissionClass): Promise<boolean> {
+    const isSuperadmin = (await this.prisma.user.findUnique({
+      select: { superadmin: true },
+      where: { id: userId }
+    }))?.superadmin;
+
+    if (isSuperadmin === true) {
+      return true;
+    }
+
     const key = this.getPermissionKeyFromClass(permission);
     if (!key) {
       this.logger.error(`Permission class ${permission.name} is not decorated with Permission decorator so it's not valid. This should be fixed.`);
