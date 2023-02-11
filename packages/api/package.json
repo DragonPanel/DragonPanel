@@ -4,6 +4,8 @@
   "description": "",
   "author": "",
   "private": true,
+  "main": "./dist/public-api.js",
+  "types": "./dist/public-api.d.ts",
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",

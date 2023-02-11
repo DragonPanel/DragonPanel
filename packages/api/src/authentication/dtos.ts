@@ -24,3 +24,7 @@ export class IsInittedDto {
   @Expose()
   initialized: boolean;
 }
+
+export interface ILoginResponseDto {
+  token: string;
+}

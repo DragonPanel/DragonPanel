@@ -204,9 +204,9 @@ describe("Authentication", () => {
         .expect(res => expect(res.body.superadmin).toBeNil());
     });
 
-    it("POST /api/auth/logout - should logout user and return 204", async () => {
+    it("DELETE /api/auth/logout - should logout user and return 204", async () => {
       await request(app.getHttpServer())
-        .post("/api/auth/logout")
+        .delete("/api/auth/logout")
         .set("Authorization", `Bearer ${accessToken}`)
         .expect(204);
     })

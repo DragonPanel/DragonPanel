@@ -1,1 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+@import 'primeicons/primeicons.css';
+@import 'primeng/resources/themes/bootstrap4-dark-purple/theme.css';
+@import 'primeng/resources/primeng.min.css';
+
+* {
+  font-family: var(--font-family);
+}

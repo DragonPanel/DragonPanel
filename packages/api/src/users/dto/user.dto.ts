@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import { Exclude, Expose, plainToInstance } from "class-transformer";
 
-export default class UserDto implements User {
+export class UserDto implements User {
   @Expose({ groups: [ "admin", "toClass" ]})
   id: string;
 
@@ -24,3 +24,7 @@ export default class UserDto implements User {
     return plainToInstance(UserDto, plain, { groups: ["toClass"], excludeExtraneousValues: true });
   }
 }
+
+export interface IUserPublicDto extends Pick<UserDto, "username" | "createdAt"> {}
+
+export interface IUserAdminDto extends Omit<UserDto, "password"> {}

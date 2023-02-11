@@ -1741,7 +1741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dragon-panel/api@workspace:packages/api":
+"@dragon-panel/api@*, @dragon-panel/api@workspace:packages/api":
   version: 0.0.0-use.local
   resolution: "@dragon-panel/api@workspace:packages/api"
   dependencies:
@@ -1806,13 +1806,19 @@ __metadata:
     "@angular/platform-browser": ^15.1.0
     "@angular/platform-browser-dynamic": ^15.1.0
     "@angular/router": ^15.1.0
+    "@dragon-panel/api": "*"
+    "@ngxs/storage-plugin": ^3.7.6
+    "@ngxs/store": ^3.7.6
     "@types/jasmine": ~4.3.0
+    immer: ^9.0.19
     jasmine-core: ~4.5.0
     karma: ~6.4.0
     karma-chrome-launcher: ~3.1.0
     karma-coverage: ~2.2.0
     karma-jasmine: ~5.1.0
     karma-jasmine-html-reporter: ~2.0.0
+    primeicons: ^6.0.1
+    primeng: ^15.2.0
     rxjs: ~7.8.0
     tslib: ^2.3.0
     typescript: ~4.9.4
@@ -2530,6 +2536,31 @@ __metadata:
     typescript: ">=4.8.2 <5.0"
     webpack: ^5.54.0
   checksum: 67c995f8ac9792a05c91a89011f9a9f05968915e4704c91d1c5f68da050f3cfd1875561c090cd47e8161a03213fc91cd2ef1142cb2fe14345e3df4e7a2ff72c0
+  languageName: node
+  linkType: hard
+
+"@ngxs/storage-plugin@npm:^3.7.6":
+  version: 3.7.6
+  resolution: "@ngxs/storage-plugin@npm:3.7.6"
+  dependencies:
+    tslib: ^1.9.0
+  peerDependencies:
+    "@angular/core": ">=6.1.0 <16.0.0"
+    "@ngxs/store": ^3.7.6 || ^3.7.6-dev
+    rxjs: ">=6.5.5"
+  checksum: 3627dc733035ff24187f5142658cd8c1dbcf7a51d89176e0013d37b0c57eeffe78af4a998ee37e6dc308cda874a2945c86275a69312952d205b3391c67755e65
+  languageName: node
+  linkType: hard
+
+"@ngxs/store@npm:^3.7.6":
+  version: 3.7.6
+  resolution: "@ngxs/store@npm:3.7.6"
+  dependencies:
+    tslib: ^1.9.0
+  peerDependencies:
+    "@angular/core": ">=6.1.0 <16.0.0"
+    rxjs: ">=6.5.5"
+  checksum: b1582d5157f36dfe1700d9f41ec6a935c794d732d474e998d3a276d6a5005e725071124e5137b83248ced2e1591c10b1fbff97c5db5d5fac21e3fc5bb70cb55b
   languageName: node
   linkType: hard
 
@@ -6534,6 +6565,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"immer@npm:^9.0.19":
+  version: 9.0.19
+  resolution: "immer@npm:9.0.19"
+  checksum: f02ee53989989c287cd548a3d817fccf0bfe56db919755ee94a72ea3ae78a00363fba93ee6c010fe54a664380c29c53d44ed4091c6a86cae60957ad2cfabc010
+  languageName: node
+  linkType: hard
+
 "immutable@npm:^4.0.0":
   version: 4.2.2
   resolution: "immutable@npm:4.2.2"
@@ -9170,6 +9208,29 @@ __metadata:
     ansi-styles: ^5.0.0
     react-is: ^18.0.0
   checksum: bcc8e86bcf8e7f5106c96e2ea7905912bd17ae2aac76e4e0745d2a50df4b340638ed95090ee455a1c0f78189efa05077bd655ca08bf66292e83ebd7035fc46fd
+  languageName: node
+  linkType: hard
+
+"primeicons@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "primeicons@npm:6.0.1"
+  checksum: a1412fee16ddbd24e06052a7e94b973cf6f68fadb5349192101388f2681f822b3bde077948e6d53e9949f87148b495e4bf2b149ad07242de068d2e7233f4446c
+  languageName: node
+  linkType: hard
+
+"primeng@npm:^15.2.0":
+  version: 15.2.0
+  resolution: "primeng@npm:15.2.0"
+  dependencies:
+    tslib: ^2.3.0
+  peerDependencies:
+    "@angular/common": ^15.1.0
+    "@angular/core": ^15.1.0
+    "@angular/forms": ^15.1.0
+    primeicons: ^6.0.1
+    rxjs: ^6.0.0 || ^7.5.0
+    zone.js: ^0.10.2 || ^0.11.0 || ^0.12.0
+  checksum: ac3562a2b44769e1c0e09af5c62c4d218dc1a39a216f7df14faddfbf37ca9f076714bf4335570a48650e2343e1f5da64cbc3ac533af32657df8c8b2ab92fa152
   languageName: node
   linkType: hard
 
