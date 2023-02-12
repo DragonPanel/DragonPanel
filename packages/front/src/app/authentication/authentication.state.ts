@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext, StateToken } from "@ngxs/store";
-import { switchMap, tap } from "rxjs";
+import { catchError, EMPTY, firstValueFrom, tap } from "rxjs";
 import { Login } from "./authentication.actions";
 import { AuthenticationService } from "./authentication.service";
 
@@ -34,17 +34,45 @@ export class AuthenticationState {
 
   constructor(private authenticationService: AuthenticationService) {}
 
+  // @Action(Login)
+  // login(ctx: StateContext<AuthenticationStateModel>, action: Login) {
+  //   ctx.patchState({ loading: true })
+  //   return this.authenticationService.login(action.payload).pipe(
+  //     catchError(err => {
+  //       console.error(err);
+  //       return EMPTY;
+  //     }),
+  //     tap({
+  //       next: loginResp => {
+  //         ctx.patchState({
+  //           token: loginResp.token,
+  //           username: action.payload.username
+  //         });
+  //       },
+  //       complete: () => {
+  //         ctx.patchState({
+  //           loading: false
+  //         });
+  //       }
+  //     })
+  //   );
+  // }
+
   @Action(Login)
-  login(ctx: StateContext<AuthenticationStateModel>, action: Login) {
+  async login(ctx: StateContext<AuthenticationStateModel>, action: Login) {
     ctx.patchState({ loading: true })
-    return this.authenticationService.login(action.payload).pipe(
-      tap(loginResp => {
-        ctx.patchState({
-          loading: false,
-          token: loginResp.token,
-          username: action.payload.username
-        });
-      })
-    );
+    try {
+      const res = await firstValueFrom(this.authenticationService.login(action.payload));
+      ctx.patchState({
+        username: action.payload.username,
+        token: res.token
+      });
+    }
+    catch(err) {
+      console.error(err);
+    }
+    finally {
+      ctx.patchState({ loading: false });
+    }
   }
 }
