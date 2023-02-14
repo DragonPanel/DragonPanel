@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Action, Selector, State, StateContext, StateToken } from "@ngxs/store";
-import { catchError, EMPTY, firstValueFrom, tap } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { Login } from "./authentication.actions";
 import { AuthenticationService } from "./authentication.service";
 
@@ -33,30 +33,6 @@ export class AuthenticationState {
   }
 
   constructor(private authenticationService: AuthenticationService) {}
-
-  // @Action(Login)
-  // login(ctx: StateContext<AuthenticationStateModel>, action: Login) {
-  //   ctx.patchState({ loading: true })
-  //   return this.authenticationService.login(action.payload).pipe(
-  //     catchError(err => {
-  //       console.error(err);
-  //       return EMPTY;
-  //     }),
-  //     tap({
-  //       next: loginResp => {
-  //         ctx.patchState({
-  //           token: loginResp.token,
-  //           username: action.payload.username
-  //         });
-  //       },
-  //       complete: () => {
-  //         ctx.patchState({
-  //           loading: false
-  //         });
-  //       }
-  //     })
-  //   );
-  // }
 
   @Action(Login)
   async login(ctx: StateContext<AuthenticationStateModel>, action: Login) {

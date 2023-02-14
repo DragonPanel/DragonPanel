@@ -3,6 +3,18 @@
 @import 'primeng/resources/themes/bootstrap4-dark-purple/theme.css';
 @import 'primeng/resources/primeng.min.css';
 
+@import './dark-theme-extensions.scss';
+
 * {
   font-family: var(--font-family);
+}
+
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+}
+
+app-root {
+  height: 100%;
 }
