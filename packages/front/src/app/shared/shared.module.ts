@@ -4,18 +4,25 @@ import { CardModule } from "primeng/card";
 import { InputTextModule } from "primeng/inputtext";
 import { ButtonModule } from "primeng/button";
 import { RippleModule } from 'primeng/ripple';
-import { FormsModule } from '@angular/forms';
+import { BlockUIModule } from 'primeng/blockui';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BlockableDirective } from './blockable.directive';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    BlockableDirective
+  ],
   imports: [
     CommonModule,
     CardModule,
     InputTextModule,
     ButtonModule,
     RippleModule,
-    FormsModule
+    BlockUIModule,
+    ProgressSpinnerModule,
+    ReactiveFormsModule
   ],
   exports: [
     CommonModule,
@@ -23,7 +30,10 @@ import { FormsModule } from '@angular/forms';
     InputTextModule,
     ButtonModule,
     RippleModule,
-    FormsModule
+    BlockUIModule,
+    ProgressSpinnerModule,
+    ReactiveFormsModule,
+    BlockableDirective
   ]
 })
 export class SharedModule { }
