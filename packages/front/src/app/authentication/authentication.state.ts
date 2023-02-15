@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Navigate } from "@ngxs/router-plugin";
 import { Action, Selector, State, StateContext, StateToken } from "@ngxs/store";
 import { firstValueFrom } from "rxjs";
 import { Login } from "./authentication.actions";
@@ -23,6 +24,11 @@ export const AUTHENTICATION_STATE_TOKEN = new StateToken<AuthenticationStateMode
 @Injectable()
 export class AuthenticationState {
   @Selector()
+  static loading(state: AuthenticationStateModel): boolean {
+    return state.loading;
+  }
+
+  @Selector()
   static token(state: AuthenticationStateModel): string | null {
     return state.token;
   }
@@ -43,6 +49,7 @@ export class AuthenticationState {
         username: action.payload.username,
         token: res.token
       });
+      ctx.dispatch(new Navigate(["/"]));
     }
     catch(err) {
       console.error(err);

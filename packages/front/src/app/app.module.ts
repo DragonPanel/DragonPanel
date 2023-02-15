@@ -7,6 +7,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NgxsModule } from '@ngxs/store';
 import { AuthenticationState } from './authentication/authentication.state';
+import { NgxsRouterPluginModule } from '@ngxs/router-plugin';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { AuthenticationState } from './authentication/authentication.state';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    NgxsModule.forRoot([ AuthenticationState ])
+    NgxsModule.forRoot([ AuthenticationState ]),
+    NgxsRouterPluginModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,1 +1,37 @@
-<p>login-page works!</p>
+<main>
+  <p-blockUI [target]="card" [blocked]="(loading$ | async) ?? false">
+    <p-progressSpinner [strokeWidth]="'4px'"></p-progressSpinner>
+  </p-blockUI>
+
+  <p-card #card>
+    <header class="login-header">
+      <h2 i18n>Sign in to Dragon Panel</h2>
+    </header>
+
+    <section>
+      <form [formGroup]="loginForm" (submit)="submit()">
+        <label for="username" i18n>Username</label>
+        <input
+          type="text"
+          pInputText
+          id="username"
+          formControlName="username"
+          placeholder="Username"
+          i18n-placeholder
+        />
+
+        <label for="password" i18n>Password</label>
+        <p-password
+          id="password"
+          formControlName="password"
+          placeholder="Password"
+          i18n-placeholder
+          [feedback]="false"
+          required
+        ></p-password>
+
+        <button pRipple type="submit" pButton label="Submit" i18n-label [disabled]="!formValid"></button>
+      </form>
+    </section>
+  </p-card>
+</main>

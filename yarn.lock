@@ -1875,6 +1875,7 @@ __metadata:
     "@angular/platform-browser-dynamic": ^15.1.0
     "@angular/router": ^15.1.0
     "@dragon-panel/api": "*"
+    "@ngxs/router-plugin": ^3.7.6
     "@ngxs/storage-plugin": ^3.7.6
     "@ngxs/store": ^3.7.6
     "@types/jasmine": ~4.3.0
@@ -2610,6 +2611,20 @@ __metadata:
     typescript: ">=4.8.2 <5.0"
     webpack: ^5.54.0
   checksum: 8a6b3a79f264b667a14edf122ca1ba372479999f6f7b5a329521146986cfca4875e500881bec1b882c14fb3a9c932606721f61e08abe8227977e2778c4703a7b
+  languageName: node
+  linkType: hard
+
+"@ngxs/router-plugin@npm:^3.7.6":
+  version: 3.7.6
+  resolution: "@ngxs/router-plugin@npm:3.7.6"
+  dependencies:
+    tslib: ^1.9.0
+  peerDependencies:
+    "@angular/core": ">=6.1.0 <16.0.0"
+    "@angular/router": ">=6.1.0 <16.0.0"
+    "@ngxs/store": ^3.7.6 || ^3.7.6-dev
+    rxjs: ">=6.5.5"
+  checksum: 1d39e137cd1704342e9c603ccc218e26f41afe0a71ab4ee55a43ecb7895c9e3b9dc3c4662161681300c0a94b02608e29dc9f0892befe4c01c82b8b8ceebcada2
   languageName: node
   linkType: hard
 
