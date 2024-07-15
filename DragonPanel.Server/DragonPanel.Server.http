@@ -1,0 +1,6 @@
+@DragonPanel.Server_HostAddress = http://localhost:5197
+
+GET {{DragonPanel.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

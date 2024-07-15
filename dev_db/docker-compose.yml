@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: "postgres:16-alpine"
+    ports:
+      - "127.0.0.1:5432:5432"
+    shm_size: 2gb
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=dragon_panel_dev
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=dragonpanel
+    volumes:
+      - ./data:/var/lib/postgresql/data
