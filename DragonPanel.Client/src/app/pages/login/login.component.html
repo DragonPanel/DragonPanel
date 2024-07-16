@@ -1,0 +1,15 @@
+<p-card header="Authorize yourself!" i18n-header>
+  <form (submit)="submit()">
+    <p-floatLabel>
+      <input pInputText type="text" id="username" name="username" [(ngModel)]="username" required />
+      <label for="username" i18n>Username</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <input pInputText type="password" id="password" name="password" [(ngModel)]="password" required />
+      <label for="password" i18n>Password</label>
+    </p-floatLabel>
+
+    <input type="submit" pButton value="Submit" i18n-value="Submit login form button text" [disabled]="!this.submitEnabled" />
+  </form>
+</p-card>

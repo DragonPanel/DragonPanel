@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-image: url("/assets/uwu.png");
+  background-repeat: no-repeat;
+  background-position-y: bottom;
+  background-position-x: right;
+  background-size: 50vh;
+}
+
+form {
+  margin-top: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  align-items: center;
+}
+
+input[type=submit] {
+  width: fit-content;
+}
