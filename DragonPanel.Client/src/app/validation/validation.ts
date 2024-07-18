@@ -1,61 +1,41 @@
-export interface ISuccessValidationResult {
-  success: true,
-}
-
-export interface IFailedValidationResult {
-  success: false,
-  errors: IValidationError[],
-}
-
-export type ValidationResult = ISuccessValidationResult | IFailedValidationResult;
-
 export interface IValidationError {
   property: string,
   value: any,
   description: string,
 }
 
+/**
+ * Helper class for little more convienient validation error adding.
+ */
+export class ValidationErrors {
+  errors: IValidationError[] = [];
+  add(property: string, description: string, value?: any) {
+    this.errors.push({
+      property, description, value
+    });
+  }
+}
+
 export class ValidationException extends Error {
-  constructor(validationResult: IFailedValidationResult) {
+  constructor(validationResult: IValidationError[]) {
     super($localize`Validation failed for some elements.`);
+
+    if (validationResult.length === 0) {
+      console.warn("Warning, ValidationException has been created with 0 validation errors.");
+    }
+
     this.name = this.constructor.name;
-    this.result = validationResult;
+    this.errors = validationResult;
   }
 
-  result: IFailedValidationResult;
+  errors: IValidationError[];
 
   /**
    * Formats validation errors to nice string array, each element represent one error
    * and is in format: <property>: <description>
    */
   format(): string[] {
-    return formatValidationErrors(this.result.errors);
-  }
-}
-
-export class ValidationResultBuilder {
-  #success: boolean = true;
-  #errors: IValidationError[] = [];
-  #builded = false;
-
-  addError(property: string, description: string, value?: any) {
-    this.#success = false;
-    this.#errors.push({ property, description, value });
-  }
-
-  build(): ValidationResult {
-    if (this.#builded) {
-      throw new Error("Already builded validation result.");
-    }
-    this.#builded = true;
-
-    if (this.#success) {
-      return { success: true };
-    }
-    return {
-      success: false,
-      errors: this.#errors
-    }
+    return formatValidationErrors(this.errors);
   }
 }
 
@@ -72,8 +52,8 @@ export function formatValidationErrors(validationErrors: IValidationError[]): st
  * Checks if validation was successful, in case of failure throws ValidationException.
  * @param result
  */
-export function assertValidationSuccess(result: ValidationResult) {
-  if (!result.success) {
+export function assertValidationSuccess(result: IValidationError[]) {
+  if (result && result.length > 0) {
     throw new ValidationException(result);
   }
 }
