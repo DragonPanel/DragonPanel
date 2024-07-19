@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+p-card {
+  width: 350px;
+}
+
+form {
+  margin-top: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  align-items: center;
+
+  div {
+    width: 100%;
+  }
+}
+input:not([type=submit]) {
+  width: 100%;
+}
+
+input[type=submit] {
+  width: fit-content;
+}

@@ -32,7 +32,7 @@ export class SetupService {
   }
 
   /**
-   * @throws { ValidationException } in case of failed validation.
+   * @throws { ValidationException } in case of failed validation client side.
    * @returns created user
    */
   createInitialAdminUser(username: string, password: string): Observable<IUser> {

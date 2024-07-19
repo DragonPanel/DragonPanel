@@ -1,1 +1,28 @@
-<p>setup works!</p>
+<p-card header="Setup your first admin user" i18n-header>
+  <form [formGroup]="setupGroup" (ngSubmit)="submit()">
+    <div>
+      <p-floatLabel>
+        <input pInputText type="text" id="username" formControlName="username" required />
+        <label for="username" i18n>Username*</label>
+      </p-floatLabel>
+
+      <ul class="form-errors" *ngIf="usernameErrors$ | async as errors">
+        <li *ngFor="let err of errors">{{ err }}</li>
+      </ul>
+    </div>
+
+    <div>
+      <p-floatLabel>
+        <input pInputText type="password" id="password" formControlName="password" size="pp:" required />
+        <label for="password" i18n>Password*</label>
+      </p-floatLabel>
+
+      <ul class="form-errors" *ngIf="passwordErrors$ | async as errors">
+        <li *ngFor="let err of errors">{{ err }}</li>
+      </ul>
+    </div>
+
+    <button type="submit" pButton [disabled]="!setupGroup.valid" i18n="Setup form submit">Submit</button>
+  </form>
+</p-card>
+

@@ -6,3 +6,22 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+ul.form-errors {
+  padding-left: 1rem;
+  margin: 0;
+  margin-top: .4rem;
+  li {
+    color: crimson;
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+}
+
+// .p-password.p-inputwrapper {
+//   width: 100%;
+
+//   input {
+//     width: 100%;
+//   }
+// }

@@ -1,3 +1,5 @@
+import { ValidationErrors as NgValidationErrors, ValidatorFn } from "@angular/forms";
+
 export interface IValidationError {
   property: string,
   value: any,
@@ -56,4 +58,18 @@ export function assertValidationSuccess(result: IValidationError[]) {
   if (result && result.length > 0) {
     throw new ValidationException(result);
   }
+}
+
+export function mapValidationErrorsToNg(key: string, errors: IValidationError[]): NgValidationErrors | null {
+  if (errors.length === 0) {
+    return null;
+  }
+
+  return {
+    [key]: errors
+  };
+}
+
+export function validationErrorKeyOf(validator: (...args: any[]) => ValidatorFn) {
+  return `sg_${validator.name}`;
 }

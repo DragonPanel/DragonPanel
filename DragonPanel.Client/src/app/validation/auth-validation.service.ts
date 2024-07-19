@@ -7,7 +7,7 @@ import { IValidationError, ValidationErrors } from './validation';
 export class AuthValidationService {
   // TODO: tbh I should fetch those from the server
   // Server should be the only source for username and password constrains.
-  public readonly usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]$/;
+  public readonly usernameRegex = /^[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]?$/;
   public readonly usernameLen = [3, 24];
   public readonly passwordLen = 8;
 
@@ -45,7 +45,7 @@ export class AuthValidationService {
       );
     }
 
-    if (this.usernameRegex.test(username)) {
+    if (!this.usernameRegex.test(username)) {
       errors.add(
         "username",
         $localize`Username can contain only alfanumerical characters and userscores. Username can't start with number or underscore and can't end with underscore.`,
