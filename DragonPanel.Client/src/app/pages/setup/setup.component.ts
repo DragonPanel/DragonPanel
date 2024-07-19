@@ -8,6 +8,7 @@ import { IValidationError } from '../../validation/validation';
 import { AsyncPipe } from '@angular/common';
 import { SetupService } from '../../services/setup.service';
 import { Router } from '@angular/router';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-setup',
@@ -21,6 +22,7 @@ import { Router } from '@angular/router';
 })
 export class SetupComponent {
   #setupService = inject(SetupService);
+  #notificationService = inject(NotificationService);
   #router = inject(Router);
 
   setupGroup = new FormGroup({
@@ -57,8 +59,9 @@ export class SetupComponent {
       await firstValueFrom(this.#setupService.createInitialAdminUser(v.username!, v.password!));
       this.#router.navigateByUrl("/");
     }
-    catch (err) {
-      // TODO
+    catch (err: any) {
+      this.#notificationService.error("Setup error", err.message ?? "Uknown error, check console.");
+      console.error(err);
     }
   }
 }
