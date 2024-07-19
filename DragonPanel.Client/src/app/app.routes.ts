@@ -28,10 +28,12 @@ export const routes: Routes = [
     // initializedGuard is needed only in login route because you can't login when
     // app is not initialized and you can't use app if you're not authorized XD
     canActivate: [notLoggedInGuard, initializedGuard],
+    data: { layoutless: true }
   },
   {
     path: "setup",
     loadComponent: () => import("./pages/setup/setup.component").then(c => c.SetupComponent),
-    canActivate: [notInitializedGuard]
+    canActivate: [notInitializedGuard],
+    data: { layoutless: true }
   },
 ];

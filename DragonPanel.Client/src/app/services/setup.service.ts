@@ -18,8 +18,6 @@ export class SetupService {
   #initialized: boolean | null = null;
 
   isInitialized(): Observable<boolean> {
-    return of(false);
-
     if (this.#initialized !== null) {
       //@ts-ignore
       return of(this.#initialized);

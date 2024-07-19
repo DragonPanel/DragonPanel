@@ -16,8 +16,6 @@ export class AuthService {
    * Returns null if user session is invalid or doesn't exists meaning user is unauthorized.
    */
   public getCurrentSession(): Observable<ISession | null> {
-    return of(null);
-
     if (this.#currentSession) {
       return of(this.#currentSession);
     }
