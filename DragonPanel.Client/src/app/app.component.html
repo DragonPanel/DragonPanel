@@ -1,9 +1,8 @@
 <p-toast/>
-@if(layoutless$ | async) {
-  <router-outlet />
-} @else {
+@if((layoutless$ | async) === false) {
   <app-layout>
     <router-outlet />
   </app-layout>
+} @else {
+  <router-outlet />
 }
-

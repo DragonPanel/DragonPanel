@@ -3,6 +3,7 @@ import { loggedInGuard } from './guards/logged-in.guard';
 import { notLoggedInGuard } from './guards/not-logged-in.guard';
 import { notInitializedGuard } from './guards/not-initialized.guard';
 import { initializedGuard } from './guards/initialized.guard';
+import { CriticalErrorComponent } from './pages/critical-error/critical-error.component';
 
 const authorizedRoutes: Routes = [
   {
@@ -36,4 +37,9 @@ export const routes: Routes = [
     canActivate: [notInitializedGuard],
     data: { layoutless: true }
   },
+  {
+    path: "panic",
+    component: CriticalErrorComponent,
+    data: { layoutless: true }
+  }
 ];

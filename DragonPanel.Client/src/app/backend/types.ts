@@ -17,3 +17,8 @@ export interface IUser {
   username: string;
   isAdmin: boolean;
 }
+
+export interface ILoginRequest {
+  username: string;
+  password: string;
+}
