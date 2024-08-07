@@ -1,0 +1,135 @@
+openapi: 3.0.0
+
+info:
+  title: Linux server administation panel
+  version: 1.0.0
+  description: Hand written API docs so my lazy ass won't forget what should I implement
+
+tags:
+  - name: Setup
+    description: Initial app setup endpoints
+  - name: Auth
+    description: Auth related endpoints
+    
+paths:
+  /initialized:
+    get:
+      tags:
+        - Setup
+      summary: Checks if the initial admin user has been set up
+      description: Returns whether the initial admin user has been set up or not
+      responses:
+        '200':
+          description: A JSON object indicating if the initial admin user has been set up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  initialized:
+                    type: boolean
+                    description: Indicates if the initial admin user has been set up
+  /auth/session:
+    get:
+      tags:
+        - Auth
+      summary: Get current session
+      description: Returns the current user session if it exists
+      responses:
+        '200':
+          description: Current user session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ISession'
+        '401':
+          description: Unauthorized, no valid session
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: User login
+      description: Logs in a user with username and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ILoginRequest'
+      responses:
+        '200':
+          description: Successful login, returns user session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ISession'
+        '401':
+          description: Unauthorized, invalid credentials
+
+  /auth/logout:
+    delete:
+      tags:
+        - Auth
+      summary: User logout
+      description: Logs out the current user
+      responses:
+        '200':
+          description: Successful logout
+
+  /auth/initial-user:
+    post:
+      tags:
+        - Auth
+        - Setup
+      summary: Create initial admin user
+      description: Creates the initial admin user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ICreateInitialUserRequest'
+      responses:
+        '201':
+          description: Initial admin user created successfully
+        '400':
+          description: Bad request, possibly due to invalid data
+        '409':
+          description: Conflict, initial user already exists
+
+components:
+  schemas:
+    ISession:
+      type: object
+      properties:
+        id:
+          type: string
+        user:
+          $ref: '#/components/schemas/IUser'
+
+    IUser:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        isAdmin:
+          type: boolean
+
+    ILoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    ICreateInitialUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
