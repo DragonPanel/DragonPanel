@@ -30,5 +30,4 @@ public class Session
     
     public DateTime CreatedAt { get; set; }
     public DateTime LastAccess { get; set; }
-    public string? LoggedInIp { get; set; }
 }

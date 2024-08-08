@@ -1,6 +1,9 @@
+using DragonPanel.Server.Auth.Model;
 using DragonPanel.Server.Auth.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace DragonPanel.Server.Auth;
 
@@ -10,7 +13,9 @@ public static class AuthenticationExtensions
     {
         ArgumentNullException.ThrowIfNull(services, nameof(services));
 
-        services.AddScoped<SessionService>();
+        services.TryAddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.TryAddScoped<SessionService>();
+        services.TryAddScoped<UserService>();
         
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, o =>
@@ -19,7 +24,7 @@ public static class AuthenticationExtensions
 
                 o.Events.OnRedirectToLogin = ctx =>
                 {
-                    ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     return Task.CompletedTask;
                 };
 
@@ -55,7 +60,6 @@ public static class AuthenticationExtensions
                     // Okey, I load session to httpCtx here because I want to make only 1 call to database in request
                     // And I can't use loading session middleware before UseAuthentication, because session depends on prinpical, so... yeah
                     httpCtx.Items[AppConstants.SessionItemKey] = session;
-
                 };
             });
     }

@@ -1,5 +1,6 @@
 using DragonPanel.Core.Data;
 using DragonPanel.Server.Auth.Model;
+using DragonPanel.Server.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
@@ -11,11 +12,11 @@ public sealed class AppDbContext : DbContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Session> Sessions { get; set; } = null!;
 
-    private readonly AppSettings.DatabaseSettings _configuration;
+    private readonly DatabaseOptions _configuration;
 
-    public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<AppSettings> configuration) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options, IOptions<DatabaseOptions> configuration) : base(options)
     {
-        _configuration = configuration.Value.Database;
+        _configuration = configuration.Value;
         ChangeTracker.StateChanged += OnEntityStateChanged;
     }
 
@@ -37,6 +38,14 @@ public sealed class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(s => s.UserId)
             .IsRequired();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
     }
 
     private void OnEntityStateChanged(object? sender, EntityStateChangedEventArgs e)

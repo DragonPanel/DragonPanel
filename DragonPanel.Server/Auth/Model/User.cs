@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace DragonPanel.Server.Auth.Model;
 
@@ -19,6 +20,7 @@ public class User
     public required string DisplayName { get; set; }
 
     [Required]
+    [JsonIgnore]
     public required string HashedPassword { get; set; }
 
     public bool Disabled { get; set; } = true;

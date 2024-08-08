@@ -41,6 +41,7 @@ public class SessionService
 
         session.LastAccess = DateTime.UtcNow;
         session.LastIp = HttpHelpers.GetRealRemoteIpAddress(context);
+        session.LastUserAgent = context.Request.Headers.UserAgent;
 
         await _dbContext.SaveChangesAsync();
         return session;
@@ -55,8 +56,9 @@ public class SessionService
         {
             User = user,
             UserAgent = context.Request.Headers.UserAgent,
+            LastUserAgent = context.Request.Headers.UserAgent,
             CreatedAt = DateTime.UtcNow,
-            LoggedInIp = ip,
+            LoggedInIpAddress = ip,
             LastIp = ip,
             IsValid = true,
             LastAccess = DateTime.UtcNow
