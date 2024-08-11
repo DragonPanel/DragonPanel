@@ -1,10 +1,14 @@
+using System.ComponentModel.DataAnnotations;
 using FluentValidation;
 
-namespace DragonPanel.Server.Auth.Dto;
+namespace DragonPanel.Server.Setup.Dto;
 
 public class CreateInitialUserRequest
 {
+    [Required]
     public required string Username { get; set; }
+    
+    [Required]
     public required string Password { get; set; }
 
     public class CreateInitialUserRequestValidator : AbstractValidator<CreateInitialUserRequest>

@@ -12,7 +12,7 @@ tags:
     description: Auth related endpoints
     
 paths:
-  /initialized:
+  /setup/initialized:
     get:
       tags:
         - Setup
@@ -91,7 +91,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ICreateInitialUserRequest'
       responses:
-        '201':
+        '204':
           description: Initial admin user created successfully
         '400':
           description: Bad request, possibly due to invalid data
@@ -123,13 +123,17 @@ components:
       properties:
         username:
           type: string
+          nullable: false
         password:
           type: string
+          nullable: false
 
     ICreateInitialUserRequest:
       type: object
       properties:
         username:
           type: string
+          nullable: false
         password:
           type: string
+          nullable: false

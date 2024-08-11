@@ -76,7 +76,10 @@ builder.Services.AddFluentValidationAutoValidation();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opts =>
+{
+    opts.EnableAnnotations();
+});
 
 var app = builder.Build();
 
@@ -89,7 +92,7 @@ if (app.Environment.IsDevelopment())
             var paths = new OpenApiPaths();
             foreach (var path in swaggerDoc.Paths)
             {
-                paths.Add($"/api{path.Key}", path.Value);
+                paths.Add($"{AppConstants.ApiRoutePrefix}{path.Key}", path.Value);
             }
 
             swaggerDoc.Paths = paths;
@@ -103,7 +106,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseSerilogRequestLogging();
 
-app.UsePathBase("/api");
+app.UsePathBase(AppConstants.ApiRoutePrefix);
 app.Use((ctx, next) =>
 {
     if (ctx.Request.PathBase == string.Empty)

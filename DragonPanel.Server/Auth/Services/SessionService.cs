@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using DragonPanel.Core.Helpers;
 using DragonPanel.Server.Auth.Model;
 using DragonPanel.Server.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 namespace DragonPanel.Server.Auth.Services;
@@ -67,6 +69,20 @@ public class SessionService
         _dbContext.Add(session);
         await _dbContext.SaveChangesAsync();
         return session;
+    }
+
+    public ClaimsPrincipal SessionToClaimsPrincipal(Session session)
+    {
+        var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+        identity.AddClaim(new Claim(AppConstants.SessionClaimType, session.Id.ToString()));
+
+        if (session.User is not null)
+        {
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, session.User.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Name, session.User.Username));
+        }
+
+        return new ClaimsPrincipal(identity);
     }
 
     public Session? GetCurrentSessionFromHttpContext()

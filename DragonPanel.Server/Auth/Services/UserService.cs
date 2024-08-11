@@ -1,5 +1,6 @@
 using System.Data;
 using System.Diagnostics;
+using System.Security.Claims;
 using DragonPanel.Server.Auth.Model;
 using DragonPanel.Server.Data;
 using DragonPanel.Server.Exceptions;
@@ -39,7 +40,8 @@ public class UserService
             Username = username.ToLowerInvariant(),
             DisplayName = username,
             HashedPassword = "Hash me, daddy!",
-            IsAdmin = true
+            IsAdmin = true,
+            IsInitial = true
         };
 
         user.HashedPassword = _passwordHasher.HashPassword(user, password);
@@ -136,5 +138,10 @@ public class UserService
     {
         username = username.ToLowerInvariant();
         return await _dbContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+    }
+
+    public async Task<User?> GetInitialUser()
+    {
+        return await _dbContext.Users.FirstOrDefaultAsync(u => u.IsInitial);
     }
 }

@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using DragonPanel.Core.Data;
 
 namespace DragonPanel.Server.Auth.Model;
 
-public class User
+public class User : BaseEntity
 {
     public Guid Id { get; set; }
 
@@ -21,11 +22,13 @@ public class User
 
     [Required]
     [JsonIgnore]
-    public required string HashedPassword { get; set; }
+    public string HashedPassword { get; set; } = null!;
 
-    public bool Disabled { get; set; } = true;
+    public bool Disabled { get; set; } = false;
 
     public string? Email { get; set; }
 
     public bool IsAdmin { get; set; } = false;
+
+    public bool IsInitial { get; set; } = false;
 }
