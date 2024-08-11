@@ -20,6 +20,7 @@ public class User : BaseEntity
     [Required]
     public required string DisplayName { get; set; }
 
+    // I can't mark password with `required` keyword because JSON will throw an exception on me
     [Required]
     [JsonIgnore]
     public string HashedPassword { get; set; } = null!;

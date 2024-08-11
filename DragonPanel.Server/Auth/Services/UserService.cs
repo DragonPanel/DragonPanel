@@ -39,7 +39,6 @@ public class UserService
         {
             Username = username.ToLowerInvariant(),
             DisplayName = username,
-            HashedPassword = "Hash me, daddy!",
             IsAdmin = true,
             IsInitial = true
         };
@@ -82,8 +81,7 @@ public class UserService
             Username = username,
             DisplayName = userInit.Username,
             Email = email,
-            IsAdmin = userInit.IsAdmin,
-            HashedPassword = "Hash me, daddy!"
+            IsAdmin = userInit.IsAdmin
         };
         
         user.HashedPassword = _passwordHasher.HashPassword(user, userInit.Password);
