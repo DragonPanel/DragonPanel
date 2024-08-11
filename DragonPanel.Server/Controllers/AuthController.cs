@@ -47,7 +47,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "Attempts to log in an user")]
-    [SwaggerResponse(204, "The user has been logged in and cookie has been set")]
+    [SwaggerResponse(201, "Created session", typeof(Session))]
     [SwaggerBadRequestResponse]
     [SwaggerResponse(401, "Invalid credentials")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
@@ -63,7 +63,7 @@ public class AuthController : ControllerBase
         var claimsPrincipal = _sessionService.SessionToClaimsPrincipal(session);
         await HttpContext.SignInAsync(claimsPrincipal);
 
-        return NoContent();
+        return Created("session", session);
     }
 
     [HttpDelete("logout")]

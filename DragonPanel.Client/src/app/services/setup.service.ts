@@ -31,16 +31,15 @@ export class SetupService {
 
   /**
    * @throws { ValidationException } in case of failed validation client side.
-   * @returns created user
+   * @returns nothing XD
    */
-  createInitialAdminUser(username: string, password: string): Observable<IUser> {
+  createInitialAdminUser(username: string, password: string): Observable<void> {
     const r = this.#validation.validateCreateUserCredentials(username, password);
     assertValidationSuccess(r);
     const payload: ICreateInitialUserRequest = { username, password };
 
-    return this.#http.post<IUser>(ENDPOINTS.createInitialUser, payload).pipe(
-      // In case of successful response id should not be empty.
-      tap(res => this.#initialized = !!res.id)
+    return this.#http.post<void>(ENDPOINTS.createInitialUser, payload).pipe(
+      tap(res => this.#initialized = true)
     );
   }
 }
