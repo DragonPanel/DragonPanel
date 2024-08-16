@@ -9,6 +9,7 @@ import { PanelModule } from 'primeng/panel';
 import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RippleModule } from 'primeng/ripple';
+import { ToolbarModule } from 'primeng/toolbar';
 
 @NgModule({
   declarations: [],
@@ -25,6 +26,7 @@ import { RippleModule } from 'primeng/ripple';
     ToastModule,
     ProgressSpinnerModule,
     RippleModule,
+    ToolbarModule
   ],
   exports: [
     FormsModule,
@@ -38,6 +40,7 @@ import { RippleModule } from 'primeng/ripple';
     ToastModule,
     ProgressSpinnerModule,
     RippleModule,
+    ToolbarModule
   ]
 })
 export class SharedModule { }

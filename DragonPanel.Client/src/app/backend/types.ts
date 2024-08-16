@@ -15,6 +15,7 @@ export interface ICreateInitialUserRequest {
 export interface IUser {
   id: string;
   username: string;
+  displayName: string;
   isAdmin: boolean;
 }
 

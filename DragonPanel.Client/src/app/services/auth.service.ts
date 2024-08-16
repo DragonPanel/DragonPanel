@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { ILoginRequest, ISession } from '../backend/types';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { ILoginRequest, ISession, IUser } from '../backend/types';
 import { catchError, map, Observable, of, retry, tap, throwError } from 'rxjs';
 import { ENDPOINTS } from '../backend/endpoints';
 
@@ -9,15 +9,21 @@ import { ENDPOINTS } from '../backend/endpoints';
 })
 export class AuthService {
   #http = inject(HttpClient);
-  #currentSession?: ISession | null;
+  #currentSession = signal<ISession | null | undefined>(undefined);
+
+  public get currentSession() {
+    return this.#currentSession.asReadonly();
+  }
+
+  public currentUser = computed(() => this.currentSession()?.user ?? null);
 
   /**
    * This method will reach server to check if session is valid or use cached value.
    * Returns null if user session is invalid or doesn't exists meaning user is unauthorized.
    */
   public getCurrentSession(): Observable<ISession | null> {
-    if (this.#currentSession !== undefined) {
-      return of(this.#currentSession);
+    if (this.#currentSession() !== undefined) {
+      return of(this.#currentSession() ?? null);
     }
 
     return this.#http.get<ISession>(ENDPOINTS.currentSession).pipe(
@@ -27,7 +33,7 @@ export class AuthService {
         }
         return throwError(() => err);
       }),
-      tap(val => this.#currentSession = val),
+      tap(val => this.#currentSession.set(val)),
       retry(3)
     );
   }
@@ -56,7 +62,7 @@ export class AuthService {
         }
         return throwError(() => err);
       }),
-      tap(val => this.#currentSession = val),
+      tap(val => this.#currentSession.set(val)),
       retry({
         // TODO: Each retry should be with increased duration. Implement standard method
         // for retrying requests only for codes >=500 and non HttpErrorResponses.
@@ -70,5 +76,10 @@ export class AuthService {
         }
       })
     );
+  }
+
+  public logout(): Observable<void> {
+    this.#currentSession.set(null);
+    return this.#http.delete<void>(ENDPOINTS.logout);
   }
 }
