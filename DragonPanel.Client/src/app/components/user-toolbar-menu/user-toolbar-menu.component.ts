@@ -24,7 +24,7 @@ export class UserToolbarMenuComponent {
 
   readonly items: MenuItem[] = [
     {
-      label: $localize`Settings`,
+      label: $localize`User settings`,
       icon: 'pi pi-cog',
       routerLink: "/user-settings"
     },

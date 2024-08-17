@@ -10,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { RippleModule } from 'primeng/ripple';
 import { ToolbarModule } from 'primeng/toolbar';
+import { RouterLink } from '@angular/router';
 
 @NgModule({
   declarations: [],
@@ -17,6 +18,7 @@ import { ToolbarModule } from 'primeng/toolbar';
     // Yeah, I may use both, idk
     FormsModule,
     ReactiveFormsModule,
+    RouterLink,
     CommonModule,
     ButtonModule,
     CardModule,
@@ -31,6 +33,7 @@ import { ToolbarModule } from 'primeng/toolbar';
   exports: [
     FormsModule,
     ReactiveFormsModule,
+    RouterLink,
     CommonModule,
     ButtonModule,
     CardModule,
