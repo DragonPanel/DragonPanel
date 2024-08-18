@@ -49,7 +49,6 @@ builder.Services.Configure<PasswordHasherOptions>(opts =>
 #endregion
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddDbContext<AppDbContext>();
 
 builder.Services.AddProblemDetails(opts =>
